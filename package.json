@@ -2,7 +2,7 @@
   "name": "neon-chess",
   "version": "1.0.0",
   "description": "chess game",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -18,5 +18,12 @@
   "bugs": {
     "url": "https://github.com/MuramatKuskov/Neon-Chess/issues"
   },
-  "homepage": "https://github.com/MuramatKuskov/Neon-Chess#readme"
+  "homepage": "https://github.com/MuramatKuskov/Neon-Chess#readme",
+  "dependencies": {
+    "three": "^0.172.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.171.0",
+    "vite": "^6.0.6"
+  }
 }
