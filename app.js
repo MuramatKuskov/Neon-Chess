@@ -1,33 +1,60 @@
 import * as THREE from "three";
-import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
-import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
-import { LineSegmentsGeometry } from 'three/addons/lines/LineSegmentsGeometry.js';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { Board } from './src/models/Board.js';
+import { loadModelFromFile } from './src/utils/loadModelFromFile.js';
 
 const canvas = window.c;
 const renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
-const loader = new GLTFLoader();
-const modelCache = new Map();
+
+const figureModels = {
+	playerOne: new Map(),
+	playerTwo: new Map()
+};
+
+const redModelColor = 0x881011;
+const blueModelColor = 0x2200AA;
 
 let renderRequested = false;
+let selectedFigure = null;
 
-function main() {
-	function renderCallback() {
-		render(0, scene, camera, controls);
-	}
-
+async function main() {
 	const [scene, camera, controls] = initScene();
+	initUI(scene, camera, controls);
 
-	addBoard(scene);
+	const board = new Board(scene);
+	board.init();
 
-	addFigures(scene, renderCallback);
+	await loadModels(scene);
+	applyWireframe(scene, figureModels.playerOne);
+	applyWireframe(scene, figureModels.playerTwo);
+	board.addFigures(figureModels, redModelColor, blueModelColor);
 
-	render(0, scene, camera, controls);
-	// requestAnimationFrame(time => render(time, scene, camera, controls));
+	render(scene, camera, controls);
 }
 
 main();
+
+function loadModels(scene) {
+	const models = ['pawn', 'rook', 'knight', 'bishop', 'queen', 'king'];
+	const promises = models.map(async model => {
+		await loadModelFromFile(scene, model, figureModels.playerOne);
+		await loadModelFromFile(scene, model, figureModels.playerTwo);
+	});
+	return Promise.all(promises);
+}
+
+function applyWireframe(scene, playerCache) {
+	const wireframeMaterial = new THREE.MeshPhongMaterial({
+		wireframe: true,
+		color: 0x000000,
+		reflectivity: 1,
+		emissive: 0x000000,
+		emissiveIntensity: 0.05,
+		emissiveMap: scene.background
+	});
+
+	playerCache.forEach(model => model.children[0].material = wireframeMaterial);
+}
 
 function initScene() {
 	const fov = 75;
@@ -37,6 +64,8 @@ function initScene() {
 	const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
 
 	const scene = new THREE.Scene();
+	// scene.fog = new THREE.FogExp2(0x550055, 0.05);
+	scene.fog = new THREE.FogExp2(0x777, 0.03);
 
 	// light
 	const color = 0xFFFFFF;
@@ -53,159 +82,72 @@ function initScene() {
 	controls.enableDamping = true;
 	controls.dampingFactor = 0.1;
 
-	// controls.autoRotate = true;
-	// controls.autoRotateSpeed = 4.0;
+	controls.autoRotate = true;
+	controls.autoRotateSpeed = 0.5;
 
 	camera.position.set(0, 0, 9);
 	controls.update();
 	controls.addEventListener('change', () => requestRenderIfNotRequested(scene, camera, controls));
 
+	window.addEventListener('resize', () => requestRenderIfNotRequested(scene, camera, controls));
+
 	return [scene, camera, controls];
 }
 
-function addBoard(scene) {
-	// Add group to scene
-	const playBoardGroup = new THREE.Group();
-	scene.add(playBoardGroup);
-	scene.userData.playBoard = playBoardGroup;
+function initUI(scene, camera, controls) {
+	const resetButton = document.getElementById('reset-camera-button');
+	resetButton.onclick = () => {
+		camera.position.set(0, 0, 9);
+		controls.update();
+		requestRenderIfNotRequested(scene, camera, controls);
+	};
 
-	const size = 8;
-	const cells = [];
+	const settingsIcon = document.getElementById('settings-icon');
+	const settingsPopup = document.getElementById('settings-popup');
+	settingsIcon.onclick = () => {
+		settingsPopup.style.display = settingsPopup.style.display === 'none' ? 'block' : 'none';
+	};
 
-	// Draw board
-	for (let i = 0; i < size; i++) {
-		const row = [];
-		for (let j = 0; j < size; j++) {
-			const cube = addCube(scene, i, j);
-			row.push(cube);
+	canvas.addEventListener('click', (event) => onCanvasClick(event, scene, camera, controls));
+	// window.addEventListener('touchstart', (event) => {
+	// 	// prevent the window from scrolling
+	// 	event.preventDefault();
+	// 	setPickPosition(event.touches[0]);
+	// }, { passive: false });
+
+	// window.addEventListener('touchmove', (event) => {
+	// 	setPickPosition(event.touches[0]);
+	// });
+
+	// window.addEventListener('touchend', clearPickPosition);
+}
+
+function onCanvasClick(event, scene, camera, controls) {
+	controls.autoRotateSpeed = 0.1;
+	const mouse = new THREE.Vector2();
+	mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+	mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+	const raycaster = new THREE.Raycaster();
+	raycaster.setFromCamera(mouse, camera);
+
+	const intersects = raycaster.intersectObjects(scene.userData.playBoard.board.children, true);
+
+	if (intersects.length > 0) {
+		const intersectedObject = intersects[0].object;
+		// console.log(intersectedObject.parent.position);
+
+		if (selectedFigure) {
+			selectedFigure.userData.containingClass.move(intersectedObject.parent.position.x, intersectedObject.parent.position.y);
+			requestRenderIfNotRequested(scene, camera, controls);
+			selectedFigure = null;
+		} else if (intersectedObject.userData.isFigure) {
+			selectedFigure = intersectedObject.parent;
 		}
-		cells.push(row);
-	}
-
-	scene.userData.playBoard.userData.cells = cells;
-	scene.userData.playBoard.rotation.x = -1;
-}
-
-function addCube(scene, x, y) {
-	const cubeGroup = new THREE.Group();
-
-	const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
-	const cubeMaterials = [
-		new THREE.MeshPhongMaterial({ color: 0x000000, transparent: true, opacity: 0.3, refractionRatio: 0.9 }),	// front
-		new THREE.MeshPhongMaterial({ color: 0x000000, transparent: true, opacity: 0.3, refractionRatio: 0.9 }), // back
-		new THREE.MeshPhongMaterial({ color: 0x000000, transparent: true, opacity: 0.3, refractionRatio: 0.9 }), // top
-		new THREE.MeshPhongMaterial({ color: 0x000000, transparent: true, opacity: 0.3, refractionRatio: 0.9 }), // bottom
-		// right
-		new THREE.MeshPhongMaterial({
-			color: (x + y) % 2 === 0 ? 0x222299 : 0x992222,
-			transparent: true,
-			opacity: 0.3,
-			envMap: scene.background,
-			refractionRatio: 0.9
-		}),
-		new THREE.MeshPhongMaterial({ color: 0x000000, transparent: true, opacity: 0.7, refractionRatio: 0.9 }), // left
-	];
-	const cubeSides = new THREE.Mesh(cubeGeometry, cubeMaterials);
-	cubeGroup.add(cubeSides);
-
-	const linesGeometry = new LineSegmentsGeometry();
-	linesGeometry.fromEdgesGeometry(new THREE.EdgesGeometry(cubeGeometry));
-	const cubeEdges = new LineSegments2(linesGeometry, new LineMaterial({ color: 0x7400A3, linewidth: 2 }));
-	cubeGroup.add(cubeEdges);
-
-	cubeGroup.position.x = x - 3.5;
-	cubeGroup.position.y = y - 3.5;
-	scene.userData.playBoard.add(cubeGroup);
-
-	return cubeGroup;
-}
-
-function addFigures(scene, callback) {
-	const blue = 0x2200AA;
-	const red = 0x881011;
-
-	addPawns(scene, blue, red, callback);
-	addRooks(scene, blue, red, callback);
-	addKnights(scene, blue, red, callback);
-	addBishops(scene, blue, red, callback);
-	addQueens(scene, blue, red, callback);
-	addKings(scene, blue, red, callback);
-}
-
-function addPawns(scene, blue, red, callback) {
-	for (let i = 0; i < 8; i++) {
-		addModel(scene, 'pawn.glb', i - 3.5, 2.5, Math.PI * 2, blue, callback);
-		addModel(scene, 'pawn.glb', i - 3.5, -2.5, Math.PI, red, callback);
 	}
 }
 
-function addRooks(scene, blue, red, callback) {
-	addModel(scene, 'rook.glb', -3.5, 3.5, 0, blue, callback);
-	addModel(scene, 'rook.glb', 3.5, 3.5, 0, blue, callback);
-	addModel(scene, 'rook.glb', -3.5, -3.5, Math.PI, red, callback);
-	addModel(scene, 'rook.glb', 3.5, -3.5, Math.PI, red, callback);
-}
-
-function addKnights(scene, blue, red, callback) {
-	addModel(scene, 'knight.glb', -2.5, 3.5, 0, blue, callback);
-	addModel(scene, 'knight.glb', 2.5, 3.5, 0, blue, callback);
-	addModel(scene, 'knight.glb', -2.5, -3.5, Math.PI, red, callback);
-	addModel(scene, 'knight.glb', 2.5, -3.5, Math.PI, red, callback);
-}
-
-function addBishops(scene, blue, red, callback) {
-	addModel(scene, 'bishop.glb', -1.5, 3.5, 0, blue, callback);
-	addModel(scene, 'bishop.glb', 1.5, 3.5, 0, blue, callback);
-	addModel(scene, 'bishop.glb', -1.5, -3.5, Math.PI, red, callback);
-	addModel(scene, 'bishop.glb', 1.5, -3.5, Math.PI, red, callback);
-}
-
-function addQueens(scene, blue, red, callback) {
-	addModel(scene, 'queen.glb', 0.5, 3.5, 0, blue, callback);
-	addModel(scene, 'queen.glb', 0.5, -3.5, Math.PI, red, callback);
-}
-
-function addKings(scene, blue, red, callback) {
-	addModel(scene, 'king.glb', -0.5, 3.5, 0, blue, callback);
-	addModel(scene, 'king.glb', -0.5, -3.5, Math.PI, red, callback);
-}
-
-function addModel(scene, model, x, y, rotation, color, renderCallBack) {
-	const basePath = './public/models/';
-
-	if (modelCache.has(model)) {
-		const cachedModel = modelCache.get(model).clone();
-		cachedModel.position.set(x, y, 1.1);
-		cachedModel.rotation.x = Math.PI / 2;
-		cachedModel.rotation.y = rotation;
-		scene.userData.playBoard.add(cachedModel);
-	} else {
-		loader.load(basePath + model, function (gltf) {
-			gltf.scene.scale.set(0.6, 0.6, 0.6);
-			modelCache.set(basePath + model, gltf.scene.clone());
-			gltf.scene.position.set(x, y, 0.9);
-			gltf.scene.rotation.x = Math.PI / 2;
-			gltf.scene.rotation.y = rotation;
-
-			const wireframeMaterial = new THREE.MeshPhongMaterial({ wireframe: true, color: color, /* transparent: true, opacity: 0.5, */ reflectivity: 0.3 });
-
-			// Create wireframe for the loaded model and hide the original model
-			gltf.scene.traverse(function (child) {
-				if (child.isMesh) {
-					child.material = wireframeMaterial;
-				}
-			});
-
-			scene.userData.playBoard.add(gltf.scene);
-			renderCallBack()
-		}, undefined, function (error) {
-			console.error(error);
-		});
-	}
-}
-
-function render(time, scene, camera, controls) {
-	time *= 0.001;  // convert time to seconds
+function render(scene, camera, controls) {
 	renderRequested = false;
 
 	if (resizeRendererToDisplaySize(renderer)) {
@@ -215,14 +157,12 @@ function render(time, scene, camera, controls) {
 
 	controls.update();
 	renderer.render(scene, camera);
-
-	// requestAnimationFrame(time => render(time, scene, camera, controls));
 }
 
 function requestRenderIfNotRequested(scene, camera, controls) {
 	if (!renderRequested) {
 		renderRequested = true;
-		requestAnimationFrame(time => render(time, scene, camera, controls));
+		requestAnimationFrame(time => render(scene, camera, controls));
 	}
 }
 
