@@ -15,25 +15,50 @@ export class Board {
 		this.cells = [];
 		this.size = 8;
 		// this.figures = [];
+		this.highlightEnabled = true;
 	}
 
 	init() {
 		const blueCell = Cell.createCube(this.scene, 0x222299);
 		const redCell = Cell.createCube(this.scene, 0x992222);
 
-		for (let i = 0; i < this.size; i++) {
+		for (let i = this.size; i > 0; i--) {
 			const row = [];
 			for (let j = 0; j < this.size; j++) {
 				const cube = (i + j) % 2 === 0 ? blueCell.clone() : redCell.clone();
-				const cell = new Cell(i - 3.5, j - 3.5, cube).addToBoard(this.board);
+				const cell = new Cell(this.scene, j - 3.5, i - 4.5, cube);
+				cube.children[0].material[4] = cube.children[0].material[4].clone();
+				cube.userData.maintainingObject = cell;
+				cell.addToBoard(this.board);
 				row.push(cell);
 			}
 			this.cells.push(row);
 		}
 
+
 		this.board.rotation.x = -1.1;
 		this.scene.add(this.board);
 		this.scene.userData.playBoard = this;
+	}
+
+	highlightAvailableMoves(figureHolder) {
+		if (!this.highlightEnabled) return;
+		for (let row of this.cells) {
+			for (let cell of row) {
+				if (figureHolder.canMove(cell)) {
+					cell.cube.children[0].material[4].color.set(0x22AA00);
+				}
+			}
+		}
+	}
+
+	clearHighlights() {
+		if (!this.highlightEnabled) return;
+		for (let row of this.cells) {
+			for (let cell of row) {
+				cell.cube.children[0].material[4].color.set(cell.cube.userData.defaultColor);
+			}
+		}
 	}
 
 	addFigures(figureModels, redModelColor, blueModelColor) {
@@ -47,8 +72,8 @@ export class Board {
 
 	addPawns(figureModels, redModelColor, blueModelColor) {
 		for (let i = 0; i < 8; i++) {
-			const bluePawn = new Pawn(blueModelColor, this.cells[1][i - 3.5 % 8]);
-			const redPawn = new Pawn(redModelColor, this.cells[7][i - 3.5 % 8]);
+			const bluePawn = new Pawn(blueModelColor, this.cells[1][i]);
+			const redPawn = new Pawn(redModelColor, this.cells[6][i]);
 			bluePawn.place(this.scene, figureModels.playerOne, i - 3.5, 2.5, Math.PI * 2, blueModelColor);
 			redPawn.place(this.scene, figureModels.playerTwo, i - 3.5, -2.5, Math.PI, redModelColor);
 		}
@@ -91,16 +116,16 @@ export class Board {
 	}
 
 	addQueens(figureModels, redModelColor, blueModelColor) {
-		const blueQueen = new Queen(blueModelColor, this.cells[0][3]);
-		const redQueen = new Queen(redModelColor, this.cells[7][3]);
+		const blueQueen = new Queen(blueModelColor, this.cells[0][4]);
+		const redQueen = new Queen(redModelColor, this.cells[7][4]);
 
 		blueQueen.place(this.scene, figureModels.playerOne, 0.5, 3.5, Math.PI * 2, blueModelColor);
 		redQueen.place(this.scene, figureModels.playerTwo, 0.5, -3.5, Math.PI, redModelColor);
 	}
 
 	addKings(figureModels, redModelColor, blueModelColor) {
-		const blueKing = new King(blueModelColor, this.cells[0][4]);
-		const redKing = new King(redModelColor, this.cells[7][4]);
+		const blueKing = new King(blueModelColor, this.cells[0][3]);
+		const redKing = new King(redModelColor, this.cells[7][3]);
 
 		blueKing.place(this.scene, figureModels.playerOne, -0.5, 3.5, Math.PI * 2, blueModelColor);
 		redKing.place(this.scene, figureModels.playerTwo, -0.5, -3.5, Math.PI, redModelColor);

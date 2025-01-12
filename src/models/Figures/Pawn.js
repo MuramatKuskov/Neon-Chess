@@ -8,15 +8,15 @@ export class Pawn extends Figure {
 	}
 
 	canMove(target) {
-		if (!super.canMove(target))
-			return false;
-		const direction = this.cell.figure?.color === Colors.BLACK ? 1 : -1;
-		const firstStepDirection = this.cell.figure?.color === Colors.BLACK ? 2 : -2;
+		if (!super.canMove(target)) return false;
+
+		const direction = this.cell.figure?.color === 0x2200AA ? -1 : 1;
+		const firstStepDirection = this.cell.figure?.color === 0x2200AA ? -2 : 2;
 
 		if ((target.y === this.cell.y + direction || this.isFirstStep
 			&& (target.y === this.cell.y + firstStepDirection))
 			&& target.x === this.cell.x
-			&& this.cell.board.getCell(target.x, target.y).isEmpty()) {
+			&& target.isEmpty()) {
 			return true;
 		}
 
@@ -29,8 +29,10 @@ export class Pawn extends Figure {
 		return false;
 	}
 
-	moveFigure(target) {
-		super.canMove(target);
+	move(target) {
+		if (!super.move(target)) return false;
 		this.isFirstStep = false;
+
+		return true;
 	}
 }

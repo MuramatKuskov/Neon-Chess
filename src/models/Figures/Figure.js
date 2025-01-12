@@ -16,21 +16,38 @@ export class Figure {
 		cachedModel.rotation.y = rotation;
 
 		cachedModel.userData = {
-			containingClass: this,
+			maintainingObject: this,
 		};
 		this.figure = cachedModel;
+		this.cell.figure = this;
 		scene.userData.playBoard.board.add(cachedModel);
 	}
 
 	canMove(target) {
-		if (target.figure?.color === this.color)
-			return false
-		if (target.figure?.name === FigureNames.KING)
-			return false
+		if (this.cell === target) return false;
+		if (target.figure?.color === this.color) return false;
+		if (target.figure?.model === "king") return false;
+
 		return true;
 	}
 
-	move(x, y) {
-		this.figure.position.set(x, y, 0.9);
+	move(target) {
+		if (!this.canMove(target)) return false;
+		if (target.figure) {
+			target.figure.cell = null;
+			if (target.figure.model === "pawn") {
+				target.figure.figure.position.set(this.color === 0x2200AA ? -5.5 : 5.5, target.figure.figure.position.x, target.figure.figure.position.z);
+			} else if (target.figure !== null) {
+				target.figure.figure.position.set(this.color === 0x2200AA ? -6.5 : 6.5, target.figure.figure.position.x, target.figure.figure.position.z);
+			}
+		}
+		this.cell.figure = null;
+		console.log(target);
+
+		this.figure.position.set(target.x, target.y, 0.9);
+		target.figure = this;
+		this.cell = target;
+
+		return true;
 	}
 }

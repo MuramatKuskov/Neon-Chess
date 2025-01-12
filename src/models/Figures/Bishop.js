@@ -7,10 +7,9 @@ export class Bishop extends Figure {
 	}
 
 	canMove(target) {
-		if (!super.canMove(target))
-			return false;
-		if (this.cell.isEmptyDiagonal(target))
-			return true;
+		if (!super.canMove(target)) return false;
+		if (this.cell.isEmptyDiagonal(target)) return true;
+
 		return false;
 	}
 }

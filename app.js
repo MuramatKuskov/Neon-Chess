@@ -108,6 +108,15 @@ function initUI(scene, camera, controls) {
 		settingsPopup.style.display = settingsPopup.style.display === 'none' ? 'block' : 'none';
 	};
 
+	const highlightToggle = document.getElementById('highlight-toggle');
+	highlightToggle.onchange = () => {
+		scene.userData.playBoard.highlightEnabled = highlightToggle.checked;
+		if (!highlightToggle.checked) {
+			scene.userData.playBoard.clearHighlights();
+			requestRenderIfNotRequested(scene, camera, controls);
+		}
+	};
+
 	canvas.addEventListener('click', (event) => onCanvasClick(event, scene, camera, controls));
 	// window.addEventListener('touchstart', (event) => {
 	// 	// prevent the window from scrolling
@@ -135,15 +144,31 @@ function onCanvasClick(event, scene, camera, controls) {
 
 	if (intersects.length > 0) {
 		const intersectedObject = intersects[0].object;
-		// console.log(intersectedObject.parent.position);
 
-		if (selectedFigure) {
-			selectedFigure.userData.containingClass.move(intersectedObject.parent.position.x, intersectedObject.parent.position.y);
+		console.log(intersectedObject);
+
+		// figure can move to selected cell
+		if (selectedFigure && selectedFigure.userData.maintainingObject.move(intersectedObject.parent.userData.maintainingObject)) {
+			scene.userData.playBoard.clearHighlights();
 			requestRenderIfNotRequested(scene, camera, controls);
 			selectedFigure = null;
-		} else if (intersectedObject.userData.isFigure) {
+		} else if (selectedFigure && intersectedObject.userData.isFigure) {
+			// select another figure
+			scene.userData.playBoard.clearHighlights();
 			selectedFigure = intersectedObject.parent;
+			scene.userData.playBoard.highlightAvailableMoves(selectedFigure.userData.maintainingObject);
+			render(scene, camera, controls);
+		} else if (intersectedObject.userData.isFigure) {
+			// select figure
+			selectedFigure = intersectedObject.parent;
+			scene.userData.playBoard.highlightAvailableMoves(selectedFigure.userData.maintainingObject);
+			render(scene, camera, controls);
 		}
+	} else if (selectedFigure) {
+		// drop selection
+		scene.userData.playBoard.clearHighlights();
+		render(scene, camera, controls);
+		selectedFigure = null;
 	}
 }
 
