@@ -6,9 +6,15 @@ export class Bishop extends Figure {
 		this.model = "bishop";
 	}
 
-	canMove(target) {
+	canMove(target, color = null) {
 		if (!super.canMove(target)) return false;
-		if (this.cell.isEmptyDiagonal(target)) return true;
+
+		if (this.cell.isEmptyDiagonal(target)) {
+			if (color && this.simulateMove(target, color)) {
+				return false;
+			}
+			return true;
+		}
 
 		return false;
 	}

@@ -1,6 +1,19 @@
 # Neon Chess
 
+# Storage Scheme
+- total matches
+- total wins
+	- blue win rate
+	- red win rate
+- isEarlyAccessMember
+<!-- SETTINGS -->
+- highlightEnabled
+- cameraAutoRotate
+- applyWireframes (for EAMembers)
+
+
 # TODO:
-- Split figures control between players
-- Restart game after finish
-- Timer
+- Visual aid for selected figure
+- Hide menu during session & show on hover/touch
+
+- Notifications (check)

@@ -6,13 +6,23 @@ export class Rook extends Figure {
 		this.model = "rook";
 	}
 
-	canMove(target) {
+	canMove(target, color = null) {
 		if (!super.canMove(target))
 			return false;
-		if (this.cell.isEmptyVertical(target))
+
+		if (this.cell.isEmptyVertical(target)) {
+			if (color && this.simulateMove(target, color)) {
+				return false;
+			}
 			return true;
-		if (this.cell.isEmptyHorizontal(target))
+		}
+		if (this.cell.isEmptyHorizontal(target)) {
+			if (color && this.simulateMove(target, color)) {
+				return false;
+			}
 			return true;
+		}
+
 		return false;
 	}
 }

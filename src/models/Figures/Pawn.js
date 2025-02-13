@@ -7,22 +7,29 @@ export class Pawn extends Figure {
 		this.isFirstStep = true;
 	}
 
-	canMove(target) {
+	canMove(target, color = null) {
 		if (!super.canMove(target)) return false;
 
-		const direction = this.cell.figure?.color === 0x2200AA ? -1 : 1;
-		const firstStepDirection = this.cell.figure?.color === 0x2200AA ? -2 : 2;
+		const direction = this.cell.figure?.color === 0xc00f00 ? 1 : -1;
+		const firstStepDirection = this.cell.figure?.color === 0xc00f00 ? 2 : -2;
 
+		// first step
 		if ((target.y === this.cell.y + direction || this.isFirstStep
 			&& (target.y === this.cell.y + firstStepDirection))
 			&& target.x === this.cell.x
-			&& target.isEmpty()) {
+			&& target.isEmpty() && this.cell.isEmptyVertical(target)) {
+			if (color && this.simulateMove(target, color)) {
+				return false;
+			}
 			return true;
 		}
 
 		if (target.y === this.cell.y + direction
 			&& (target.x === this.cell.x + 1 || target.x === this.cell.x - 1)
 			&& this.cell.isEnemy(target)) {
+			if (color && this.simulateMove(target, color)) {
+				return false;
+			}
 			return true;
 		}
 
@@ -30,9 +37,7 @@ export class Pawn extends Figure {
 	}
 
 	move(target) {
-		if (!super.move(target)) return false;
+		super.move(target);
 		this.isFirstStep = false;
-
-		return true;
 	}
 }

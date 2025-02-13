@@ -16,12 +16,12 @@ export class Cell {
 		const cube = new THREE.Group();
 		cube.userData.defaultColor = color;
 		const geometry = new THREE.BoxGeometry(1, 1, 1);
-		const baseMaterial = new THREE.MeshPhongMaterial({
+		const sideMaterial = new THREE.MeshPhongMaterial({
 			color: 0x000000,
 			transparent: true,
-			opacity: 0
+			opacity: 0.1,
 		});
-		const surfaceMaterial = new THREE.MeshPhongMaterial({
+		const upperSurfaceMaterial = new THREE.MeshPhongMaterial({
 			color: color,
 			transparent: true,
 			opacity: 0.5,
@@ -32,12 +32,12 @@ export class Cell {
 			// emissiveMap: scene.background,
 		});
 		const cubeSides = [
-			baseMaterial,
-			baseMaterial,
-			baseMaterial,
-			baseMaterial,
-			surfaceMaterial,
-			baseMaterial,
+			sideMaterial,
+			sideMaterial,
+			sideMaterial,
+			sideMaterial,
+			upperSurfaceMaterial,
+			sideMaterial,
 		];
 
 		const cubeMesh = new THREE.Mesh(geometry, cubeSides);
@@ -55,6 +55,14 @@ export class Cell {
 		cube.add(cubeEdges);
 
 		return cube;
+	}
+
+	highlight() {
+		this.cube.children[0].material[4].color.set(0x22AA00);
+	}
+
+	clearHighlight() {
+		this.cube.children[0].material[4].color.set(this.cube.userData.defaultColor);
 	}
 
 	addToBoard(board) {

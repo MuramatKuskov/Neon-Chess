@@ -1,53 +1,69 @@
+import { board } from "../../modules/scene";
+
 export class Figure {
 	constructor(color, cell) {
 		this.color = color;
 		this.cell = cell;
-		this.locked = false;
+		this.defeated = false;
 		this.model = null;
 		this.figure = null;
-	}
-
-	place(scene, userCache, x, y, rotation, color) {
-		const cachedModel = userCache.get(this.model).clone();
-
-		cachedModel.children[0].material.color.set(color);
-
-		cachedModel.position.set(x, y, 0.9);
-		cachedModel.rotation.y = rotation;
-
-		cachedModel.userData = {
-			maintainingObject: this,
-		};
-		this.figure = cachedModel;
-		this.cell.figure = this;
-		scene.userData.playBoard.board.add(cachedModel);
+		this.isInitialPosition = true;
 	}
 
 	canMove(target) {
 		if (this.cell === target) return false;
 		if (target.figure?.color === this.color) return false;
-		if (target.figure?.model === "king") return false;
 
 		return true;
 	}
 
-	move(target) {
-		if (!this.canMove(target)) return false;
-		if (target.figure) {
-			target.figure.cell = null;
-			if (target.figure.model === "pawn") {
-				target.figure.figure.position.set(this.color === 0x2200AA ? -5.5 : 5.5, target.figure.figure.position.x, target.figure.figure.position.z);
-			} else if (target.figure !== null) {
-				target.figure.figure.position.set(this.color === 0x2200AA ? -6.5 : 6.5, target.figure.figure.position.x, target.figure.figure.position.z);
+	move(targetCell) {
+		// cell = null if figure is defeated
+		if (this.cell) this.cell.figure = null;
+
+		if (targetCell.figure) {
+			targetCell.figure.isInitialPosition = false;
+			targetCell.figure.defeated = true;
+			targetCell.figure.cell = null;
+			if (targetCell.figure.model === "pawn") {
+				targetCell.figure.figure.position.set(this.color === 0xc00f00 ? 5.5 : -5.5, targetCell.figure.figure.position.x, targetCell.figure.figure.position.z);
+			} else {
+				targetCell.figure.figure.position.set(this.color === 0xc00f00 ? 6.5 : -6.5, targetCell.figure.figure.position.x, targetCell.figure.figure.position.z);
 			}
+			targetCell.figure.figure.userData.maintainingObject.cell = null;
+			targetCell.figure.figure.userData.maintainingObject.defeated = true;
+			targetCell.figure = null;
 		}
-		this.cell.figure = null;
-		console.log(target);
 
-		this.figure.position.set(target.x, target.y, 0.9);
-		target.figure = this;
-		this.cell = target;
+		// this.cell = targetCell;
+		// targetCell.figure = { ...this, cell: targetCell };
 
-		return true;
+		targetCell.figure = this;
+		this.cell = targetCell;
+		this.figure.position.set(targetCell.x, targetCell.y, 0.9);
+
+		if (this.isInitialPosition) this.isInitialPosition = false;
+	}
+
+	simulateMove(target, color) {
+		// remember starting cell
+		const initialCell = this.cell;
+		const targetFigure = target.figure;
+		const targetPos = Object.assign({}, targetFigure?.figure?.position);
+
+		this.move(target);
+
+		const check = board.isCheck(color);
+
+		// rollback
+		this.move(initialCell);
+		if (targetFigure) {
+			target.figure = targetFigure;
+			targetFigure.defeated = false;
+			targetFigure.cell = target;
+			targetFigure.figure.position.set(targetPos.x, targetPos.y, targetPos.z);
+		}
+
+		return check;
 	}
 }
