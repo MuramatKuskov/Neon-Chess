@@ -1,17 +1,17 @@
 import { Figure } from "./Figure";
 
 export class Knight extends Figure {
-	constructor(color, cell) {
-		super(color, cell);
-		this.model = "knight";
+	constructor(color, x, y) {
+		super(color, x, y);
+		this.name = "knight";
 	}
 
 	canMove(target, color = null) {
 		if (!super.canMove(target))
 			return false;
 
-		const dx = Math.abs(this.cell.x - target.x);
-		const dy = Math.abs(this.cell.y - target.y);
+		const dx = Math.abs(this.model.position.x - target.x);
+		const dy = Math.abs(this.model.position.y - target.y);
 
 		const validMove = (dx === 1 && dy === 2) || (dx === 2 && dy === 1);
 
@@ -22,6 +22,5 @@ export class Knight extends Figure {
 		}
 
 		return true;
-		// return (dx === 1 && dy === 2) || (dx === 2 && dy === 1);
 	}
 }

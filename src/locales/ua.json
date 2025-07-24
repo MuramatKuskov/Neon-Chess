@@ -8,7 +8,7 @@
 	"cameraAutoRotate": "Автоматичне обертання камери",
 	"cameraInertia": "Інерція камери",
 	"userMatchCount": "Всього матчів: ",
-	"userWinCount": "Всього перемог: ",
+	"userVictoryCount": "Всього перемог: ",
 	"findGame": "Знайти гру",
 	"playLocal": "Локальна гра",
 	"joinGame": "Приєднатися до гри",
@@ -27,5 +27,8 @@
 	"minutes": "хв",
 	"soundOn": "Звук",
 	"musicOn": "Музика",
+	"leave": "Вихід",
+	"stay": "Залишитися",
+	"leavePrompt": "Покинути гру?",
 	"": ""
 }

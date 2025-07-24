@@ -21,7 +21,7 @@ export function listenParameters(toggleLangIcon, applyLocaleText) {
 	// Toggle language on switcher click
 	document.querySelectorAll("[data-lang]").forEach(node => {
 		node.onclick = event => {
-			language = event.target.getAttribute('data-lang') === 'en' ? 'ua' : 'en';
+			user.language = event.target.getAttribute('data-lang') === 'en' ? 'ua' : 'en';
 			toggleLangIcon();
 			applyLocaleText();
 		};
@@ -42,15 +42,6 @@ export function listenParameters(toggleLangIcon, applyLocaleText) {
 		setSettings({ musicOn: event.target.checked });
 		window.Telegram.WebApp.CloudStorage.setItem("settings", JSON.stringify(getSettings()), handleTelegramError);
 	};
-
-	// const highlightToggle = document.getElementById('highlight-toggle');
-	// highlightToggle.onchange = () => {
-	// 	scene.userData.playBoard.highlightEnabled = highlightToggle.checked;
-	// 	if (!highlightToggle.checked) {
-	// 		scene.userData.playBoard.clearHighlights();
-	// 		requestRenderIfNotRequested(scene, camera, controls);
-	// 	}
-	// };
 }
 
 export function applyUserPreferences() {
@@ -58,19 +49,18 @@ export function applyUserPreferences() {
 		window.Telegram.WebApp.CloudStorage.getItems(["settings", "language"], (error, items) => {
 			if (error) {
 				handleTelegramError(err);
-				reject(error);
-			} else {
-				window.language = items.language;
-
-				const cachedSettings = JSON.parse(items.settings);
-
-				Object.keys(getSettings()).forEach(key => {
-					setSettings({ [key]: cachedSettings[key] });
-					document.getElementById(key).checked = cachedSettings[key];
-				});
-
-				resolve();
+				return reject(error);
 			}
+
+			user.language = items.language;
+			const cachedSettings = JSON.parse(items.settings);
+
+			Object.keys(getSettings()).forEach(key => {
+				setSettings({ [key]: cachedSettings[key] });
+				document.getElementById(key).checked = cachedSettings[key];
+			});
+
+			resolve();
 		});
 	});
 }

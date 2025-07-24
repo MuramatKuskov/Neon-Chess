@@ -1,22 +1,24 @@
+import { board } from "../../modules/scene";
 import { Figure } from "./Figure";
 
 export class Rook extends Figure {
-	constructor(color, cell) {
-		super(color, cell);
-		this.model = "rook";
+	constructor(color, x, y) {
+		super(color, x, y);
+		this.name = "rook";
 	}
 
 	canMove(target, color = null) {
 		if (!super.canMove(target))
 			return false;
 
-		if (this.cell.isEmptyVertical(target)) {
+		const currentCell = board.getCellByCoordinates(this.model.position.x, this.model.position.y);
+		if (currentCell.isEmptyVertical(target)) {
 			if (color && this.simulateMove(target, color)) {
 				return false;
 			}
 			return true;
 		}
-		if (this.cell.isEmptyHorizontal(target)) {
+		if (currentCell.isEmptyHorizontal(target)) {
 			if (color && this.simulateMove(target, color)) {
 				return false;
 			}

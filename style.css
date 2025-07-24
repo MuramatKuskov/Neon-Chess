@@ -51,49 +51,41 @@ main, #c {
 	display: block;
 }
 
-.legend__text {
-	border-bottom: 1px dashed var(--high-contrast-color);
-}
-
-.legend__text:hover {
-	border: none;
-}
-
-.legend__hint {
-	position: absolute;
-	top: -1.3em;
+.UI {
+	pointer-events: none;
+	position: fixed;
+	top: 0;
 	left: 0;
 	width: 100%;
 	height: 100%;
-	visibility: hidden;
-	overflow: visible;
-	text-wrap: nowrap;
-}
-
-.legend__text:hover + .legend__hint, .legend__text:focus + .legend__hint {
-	visibility: visible;
-}
-
-footer {
-	display: flex;
-	justify-content: space-between;
-	gap: 1em;
-	flex-wrap: nowrap;
-	width: 70%;
-	position: fixed;
-	bottom: 0;
-	left: calc(50% - 35%);
-	padding: 1em 0;
 	z-index: 100;
 }
 
-.footer-icon {
-	transition: 150ms ease-in-out;
+#leaveCurrentSession {
+	display: none;
+	pointer-events: all;
+	position: fixed;
+	top: 2.5em;
+	right: 4em;
+	padding: 0.5em;
+	cursor: pointer;
+	border-radius: 50%;
+	overflow: hidden;
+	transition: ease 300ms;
 }
 
-.footer-icon:hover {
+#leaveCurrentSession.visible {
+	display: block;
+}
+
+#leaveCurrentSession:hover {
 	cursor: pointer;
-	transform: scale(1.2);
+	background-color: rgba(0, 0, 0, 0.2);
+	box-shadow: 0 0 10px var(--high-contrast-color);
+}
+
+#leaveCurrentSession:hover img {
+	filter: invert(50%) sepia(100%) saturate(1000%) hue-rotate(335deg);
 }
 
 #gameStatus {
@@ -141,6 +133,35 @@ footer {
 	box-shadow: 2px 3px 2px var(--blue-theme-color), -2px 0 0.4em var(--red-theme-color);
 }
 
+#rematch.highlighted {
+	/* green border & box shadow */
+	border-color: #00dd03;
+	box-shadow: 0 0 10px #00dd03;
+}
+
+.legend__text {
+	border-bottom: 1px dashed var(--high-contrast-color);
+}
+
+.legend__text:hover {
+	border: none;
+}
+
+.legend__hint {
+	position: absolute;
+	top: -1.3em;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	visibility: hidden;
+	overflow: visible;
+	text-wrap: nowrap;
+}
+
+.legend__text:hover + .legend__hint, .legend__text:focus + .legend__hint {
+	visibility: visible;
+}
+
 #notification {
 	position: fixed;
 	top: 25%;
@@ -153,6 +174,7 @@ footer {
 	z-index: 100;
 	transition: 300ms ease-in-out;
 	border-radius: 5px;
+	pointer-events: all;
 }
 
 #notification.active {
@@ -189,8 +211,31 @@ button, input {
 	color: inherit;
 }
 
+.menubar {
+	display: flex;
+	justify-content: space-between;
+	gap: 1em;
+	flex-wrap: nowrap;
+	width: 70%;
+	position: fixed;
+	bottom: 0;
+	left: calc(50% - 35%);
+	padding: 1em 0;
+	z-index: 100;
+	pointer-events: all;
+}
+
+.menubar-icon {
+	transition: 150ms ease-in-out;
+}
+
+.menubar-icon:hover {
+	cursor: pointer;
+	transform: scale(1.2);
+}
+
 @media (min-width: 576px) {
-	footer {
+	.menubar {
 		width: 500px;
 		left: calc(50% - 250px);
 	}

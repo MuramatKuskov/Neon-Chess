@@ -34,6 +34,7 @@
 
 .popup-small .popup__frame {
 	height: fit-content;
+	width: fit-content;
 }
 
 .popup__header {
@@ -44,6 +45,7 @@
 }
 
 .popup__body {
+	/* width: fit-content; */
 	padding: 1em;
 	height: calc(100% - 2em);
 	overflow-x: hidden;
@@ -158,22 +160,64 @@
 	transition: 100ms ease-in;
 }
 
+.popup__match:not(:first-child) {
+	margin-top: 1em;
+}
+
 .popup__match:hover {
 	border-color: var(--blue-theme-color);
 }
 
-.popup__match *:first-child {
+.popup__match > :first-child {
 	flex: 1 1 100%;
+}
+
+.popup__match-content {
+	display: flex;
+	gap: 2em;
+}
+
+.popup__match-players {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.popup__match-info {
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+}
+
+.popup__match-player {
+	display: flex;
+	align-items: center;
+	gap: 0.3em;
 }
 
 .popup__match-tag {
 	width: fit-content;
 	font-size: smaller;
 	color: var(--low-contrast-color);
+	filter: brightness(0.4);
 }
 
 .popup__match-text {
 	font-size: smaller;
+}
+
+.popup__match-indicator {
+	width: 0.5em;
+	height: 0.5em;
+	border-radius: 50%;
+}
+
+.popup__match-indicator.green {
+	background-color: green;
+}
+
+.popup__match-indicator.red {
+	background-color: red;
 }
 
 .popup__match-btns {
@@ -190,8 +234,17 @@
 }
 
 @media (min-width: 576px) {
-	.popup-small .popup__frame {
+	/* .popup-small .popup__frame {
 		width: 75%;
+	} */
+
+	.popup__match-players {
+		flex-direction: row;
+		gap: 0.4em;
+	}
+
+	.popup__match-content {
+		gap: 3em;
 	}
 
 	.popup__match-btns {

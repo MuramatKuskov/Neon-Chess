@@ -1,21 +1,19 @@
 import { initUI } from './src/modules/userInterface.js';
-import { API_BASE_URL } from "./src/apiConfig.js";
-import { initLocalSession } from './src/modules/gameSession.js';
+import { handleUserPreferences } from './src/utils/settings.js';
+import { User } from './src/models/User.js';
 
 window.Telegram.WebApp.ready();
-const back_url = API_BASE_URL || 'http://localhost:8080';
-window.language;
 
 async function main() {
-	// if (!window.Telegram.WebApp.initData.length) return alert("Please, open this page from Telegram @digital_duels_bot");
+	if (!window.Telegram.WebApp.initData.length) {
+		alert("Please, open this page via Telegram @digital_duels_bot");
+		return;
+	}
+	// user needs to be set properly, right?
+	// TODO: switch to initData & validate
+	window.user = new User(window.Telegram.WebApp.initDataUnsafe.user);
+	await handleUserPreferences();
 	initUI();
-	// initLocalSession(true, 60);
 }
 
 main();
-
-async function fetchPublicGames() {
-	const response = await fetch(`${back_url}/api/getPublicSessions`);
-	const data = await response.json();
-	return data;
-}

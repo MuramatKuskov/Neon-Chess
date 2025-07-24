@@ -4,8 +4,13 @@ import { canvas, renderer, render, requestRenderIfNotRequested } from './renderi
 import { Board } from '../models/Board.js';
 import { loadModels } from '../utils/loadModels.js';
 import { applyWireframe } from '../utils/applyWireframe.js';
-import { figureModels } from '../modules/gameSession.js';
 import { getSettings } from "../utils/settings.js";
+
+const figureModels = {
+	red: new Map(),
+	blue: new Map()
+}
+let scene, camera, controls, board;
 
 function initScene() {
 	const fov = 75;
@@ -47,28 +52,17 @@ function initScene() {
 }
 
 async function setScene() {
-	const [scene, camera, controls] = initScene();
-	const board = new Board(scene).init();
+	[scene, camera, controls] = initScene();
+	board = new Board(scene).init();
 	await loadModels(figureModels);
 
-	// тут не по умолчанию включать, а по конфигу
-	// тестеру дать опцию в конфиг
-	// if (tg.CloudStorage.getItem("isEarlyAccessMember", (err, val) => {
-	// 	if (err) {
-	// 		alert(JSON.stringify(err));
-	// 		console.error(err);
-	// 		return;
-	// 	}
-	// 	return val;
-	// })) {
-	applyWireframe(scene, figureModels.playerOne);
-	applyWireframe(scene, figureModels.playerTwo);
-	// }
+	applyWireframe(scene, figureModels.red);
+	applyWireframe(scene, figureModels.blue);
 
 	board.addFigures(figureModels);
 	render(scene, camera, controls);
-
-	return [scene, camera, controls, board];
 }
 
-export const [scene, camera, controls, board] = await setScene();
+setScene();
+
+export { scene, camera, controls, board, figureModels };

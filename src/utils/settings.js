@@ -39,7 +39,25 @@ export function setSettings(newSettings) {
 	});
 }
 
-async function handleUserPreferences() {
+function setDefaultParams() {
+	let lang;
+	if (user.language !== "ru" && user.language !== "ua") {
+		lang = "en";
+	} else {
+		lang = "ua";
+	}
+
+	window.Telegram.WebApp.CloudStorage
+		.setItem("language", lang, handleTelegramError)
+		.setItem("isEarlyAccessMember", true, handleTelegramError)
+		.setItem("matches", 0, handleTelegramError)
+		.setItem("wins", 0, handleTelegramError)
+		.setItem("applyWireframes", true, handleTelegramError)
+		.setItem("soundOn", true, handleTelegramError)
+		.setItem("settings", JSON.stringify(getSettings()), handleTelegramError);
+}
+
+export async function handleUserPreferences() {
 	return new Promise((resolve, reject) => {
 		window.Telegram.WebApp.CloudStorage.getKeys(async (error, keys) => {
 			if (error) {
@@ -47,26 +65,8 @@ async function handleUserPreferences() {
 				return reject(error);
 			}
 
-			// if user is not in cloud storage, set defaults & save
 			if (!keys.length) {
-				let lang;
-
-				if (window.Telegram.WebApp.initDataUnsafe.user.language_code !== "ru"
-					&&
-					window.Telegram.WebApp.initDataUnsafe.user.language_code !== "ua") {
-					lang = "en";
-				} else {
-					lang = "ua";
-				}
-
-				window.Telegram.WebApp.CloudStorage
-					.setItem("language", lang, handleTelegramError)
-					.setItem("isEarlyAccessMember", true, handleTelegramError)
-					.setItem("matches", 0, handleTelegramError)
-					.setItem("wins", 0, handleTelegramError)
-					.setItem("applyWireframes", true, handleTelegramError)
-					.setItem("soundOn", true, handleTelegramError)
-					.setItem("settings", JSON.stringify(getSettings()), handleTelegramError);
+				setDefaultParams();
 			} else {
 				await applyUserPreferences();
 			}
@@ -75,5 +75,3 @@ async function handleUserPreferences() {
 		});
 	});
 }
-
-await handleUserPreferences();

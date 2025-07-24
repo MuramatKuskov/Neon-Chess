@@ -7,7 +7,7 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Liter&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="./style.css">
+	<link rel="stylesheet" href="/style.css">
 	<script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 	<script type="importmap">
 		{
@@ -17,7 +17,7 @@
 		  }
 		}
 	</script>
-	<script type="module" src="./app.js" defer></script>
+	<script type="module" src="/app.js" defer></script>
 	<title>Neon Chess</title>
 </head>
 
@@ -25,207 +25,236 @@
 	<main>
 		<canvas id="c"></canvas>
 		<audio src="/sound/music/0.mp3"></audio>
-	</main>
-	<footer>
-		<img id="wutIcon" src="/icons/Lock.svg" alt="placeholder" data-alt="placeholder" class="footer-icon">
-		<img id="browseIcon" src="/icons/OpenEye.svg" alt="browse" data-alt="browse" class="footer-icon">
-		<img id="playIcon" src="/icons/Play.svg" alt="play" data-alt="play" class="footer-icon">
-		<img id="settingsIcon" src="/icons/Gear.svg" alt="settings" data-alt="settings" class="footer-icon">
-		<img id="profileIcon" src="/icons/Person.svg" alt="profile" data-alt="profile" class="footer-icon">
-	</footer>
 
-	<div class="overlays">
-		<div id="gameStatus">
-			<span id="timer"></span>
-		</div>
-
-		<div class="notification" id="notification">
-			<div class="notification__content">
-				<p class="notification__text"></p>
-				<button class="btn btn-minimal notification__btn" type="button">
-					<img src="/icons/Cross.svg" alt="Close">
-				</button>
+		<div class="UI">
+			<div id="gameStatus">
+				<span id="timer"></span>
 			</div>
-			<div class="notification__indicator">
-				<div class="notification__indicator-bar"></div>
-			</div>
-		</div>
 
-		<div class="menus">
-			<div id="placeholder" class="popup">
-				<div class="popup__wrapper">
-					<div class="popup__frame">
-						<h3 class="popup__header" data-text="placeholder"></h3>
-						<div class="popup__body"></div>
-					</div>
+			<div class="notification" id="notification">
+				<div class="notification__content">
+					<p class="notification__text"></p>
+					<button class="btn btn-minimal notification__btn" type="button">
+						<img src="./icons/Cross.svg" alt="Close">
+					</button>
+				</div>
+				<div class="notification__indicator">
+					<div class="notification__indicator-bar"></div>
 				</div>
 			</div>
 
-			<div id="browse" class="popup">
-				<div class="popup__wrapper">
-					<div class="popup__frame">
-						<h3 class="popup__header" data-text="browse"></h3>
-						<div class="popup__body"></div>
+			<button id="leaveCurrentSession" style="font-size: 0.5em;" class="btn" type="button">
+				<img src="./icons/Exit.svg" alt="Leave current session">
+			</button>
+
+			<div class="menus">
+				<div id="placeholder" class="popup">
+					<div class="popup__wrapper">
+						<div class="popup__frame">
+							<h3 class="popup__header" data-text="placeholder"></h3>
+							<div class="popup__body"></div>
+						</div>
 					</div>
 				</div>
-			</div>
 
-			<div id="play" class="popup">
-				<div class="popup__wrapper">
-					<div class="popup__frame">
-						<h3 class="popup__header" data-text="play"></h3>
-						<div class="popup__body">
-							<div class="popup__section">
-								<fieldset class="popup__field">
-									<legend class="legend popup__legend" data-text="joinGame"></legend>
-									<input id="gameId" type="text" name="gameId" placeholder="Game ID">
-									<button id="joinSession" class="btn btn-small btn-enter popup__btn" type="button">
-										<img src="/icons/Enter.svg" alt="Join" class="icon popup__icon">
-									</button>
-								</fieldset>
-								<button id="matchmaker" class="btn btn-neon popup__btn" type="button"
-									data-text="findGame"></button>
-							</div>
-							<div class="popup__section">
-								<fieldset class="popup__field">
-									<legend class="legend legend_hinted popup__legend">
-										<span class="legend__text" data-text="allowSpectators"></span>
-										<span class="legend__hint" data-text="visibilityHint"></span>
-									</legend>
-									<input type="checkbox" name="allowSpectators" id="allowSpectators">
-								</fieldset>
+				<div id="browse" class="popup">
+					<div class="popup__wrapper">
+						<div class="popup__frame">
+							<h3 class="popup__header" data-text="browse"></h3>
+							<div class="popup__body"></div>
+						</div>
+					</div>
+				</div>
 
-								<fieldset class="popup__field popup__expand-trigger">
-									<legend class="legend popup__legend" data-text="useTimer"></legend>
-									<input type="checkbox" name="useTimer" id="useTimer">
-								</fieldset>
+				<div id="play" class="popup">
+					<div class="popup__wrapper">
+						<div class="popup__frame">
+							<h3 class="popup__header" data-text="play"></h3>
+							<div class="popup__body">
 
-								<div class="popup__expand-content">
-									<div class="option custom-range">
-										<div class="custom-range__background"></div>
-										<input type="range" name="setTimer" id="setTimer" min="1" max="60" value="5" step="1">
-										<div class="custom-range__content">
-											<label for="" class="custom-range__label" data-text="setTimerDuration"></label>
-											<div class="custom-range__indicator">
-												<span id="timerValue"></span>
-												<span data-text="minutes"></span>
-											</div>
-										</div>
-									</div>
+								<!-- join session -->
+								<!-- <div class="popup__section">
+									<fieldset class="popup__field">
+										<legend class="legend popup__legend" data-text="joinGame"></legend>
+										<input id="gameId" type="text" name="gameId" placeholder="Game ID">
+										<button id="joinSession" class="btn btn-small btn-enter popup__btn" type="button">
+											<img src="./icons/Enter.svg" alt="Join" class="icon popup__icon">
+										</button>
+									</fieldset>
+									<button id="matchmaker" class="btn btn-neon popup__btn" type="button"
+										data-text="findGame"></button>
+								</div> -->
 
+								<!-- init session -->
+								<div class="popup__section">
 									<!-- <fieldset class="popup__field">
-										<legend class="legend popup__legend" data-text="setTimerDuration"></legend>
-										<div class="range">
-											<input type="range" name="setTimer" id="setTimer" min="1" max="60" value="5" step="1">
-											<label for="setTimer">
-												<span id="timerValue"></span>
-												<span data-text="minutes"></span>
-											</label>
-										</div>
+										<legend class="legend legend_hinted popup__legend">
+											<span class="legend__text" data-text="allowSpectators"></span>
+											<span class="legend__hint" data-text="visibilityHint"></span>
+										</legend>
+										<input type="checkbox" name="allowSpectators" id="allowSpectators">
 									</fieldset> -->
 
+									<fieldset class="popup__field popup__expand-trigger">
+										<legend class="legend popup__legend" data-text="useTimer"></legend>
+										<input type="checkbox" name="useTimer" id="useTimer">
+									</fieldset>
+
+									<div class="popup__expand-content">
+										<div class="option custom-range">
+											<div class="custom-range__background"></div>
+											<input type="range" name="setTimer" id="setTimer" min="1" max="60" value="5" step="1">
+											<div class="custom-range__content">
+												<label for="" class="custom-range__label" data-text="setTimerDuration"></label>
+												<div class="custom-range__indicator">
+													<span id="timerValue"></span>
+													<span data-text="minutes"></span>
+												</div>
+											</div>
+										</div>
+
+										<!-- <fieldset class="popup__field">
+													<legend class="legend popup__legend" data-text="setTimerDuration"></legend>
+													<div class="range">
+														<input type="range" name="setTimer" id="setTimer" min="1" max="60" value="5" step="1">
+														<label for="setTimer">
+															<span id="timerValue"></span>
+															<span data-text="minutes"></span>
+														</label>
+													</div>
+												</fieldset> -->
+
+									</div>
+									<div class="popup__row">
+										<button id="playLocal" class="btn btn-neon popup__btn" type="button"
+											data-text="playLocal"></button>
+										<button id="createSession" class="btn btn-neon popup__btn" type="button"
+											data-text="createSession"></button>
+									</div>
 								</div>
-								<div class="popup__row">
-									<button id="playLocal" class="btn btn-neon popup__btn" type="button"
-										data-text="playLocal"></button>
-									<button id="createSession" class="btn btn-neon popup__btn" type="button"
-										data-text="createSession"></button>
+
+								<!-- session list -->
+								<div class="popup__section" id="myLiveSessions">
+									<h3 class="popup__subtitle" data-text="myLiveSessions"></h3>
+									<ul class="popup__list">
+										<li class="popup__match">
+											<div class="popup__match-content">
+												<span class="popup__match-tag">vs:</span>
+												<span class="popup__match-text">Gwynbleidd</span>
+											</div>
+											<div class="popup__match-btns">
+												<button class="btn btn-small btn-enter popup__btn" type="button">
+													<img class="icon popup__icon" src="./icons/Enter.svg" alt="Join">
+												</button>
+												<button class="btn btn-small btn-exit popup__btn" type="button">
+													<img class="icon popup__icon" src="./icons/Exit.svg" alt="Leave">
+												</button>
+											</div>
+										</li>
+									</ul>
 								</div>
 							</div>
-							<div class="popup__section">
-								<h3 class="popup__subtitle" data-text="myLiveSessions"></h3>
-								<ul class="popup__list">
-									<li class="popup__match">
-										<div class="popup__match-content">
-											<span class="popup__match-tag">vs:</span>
-											<span class="popup__match-text">Gwynbleidd</span>
-										</div>
-										<div class="popup__match-btns">
-											<button class="btn btn-small btn-enter popup__btn" type="button">
-												<img class="icon popup__icon" src="/icons/Enter.svg" alt="Join">
-											</button>
-											<button class="btn btn-small btn-exit popup__btn" type="button">
-												<img class="icon popup__icon" src="/icons/Exit.svg" alt="Leave">
-											</button>
-										</div>
-									</li>
-								</ul>
+						</div>
+					</div>
+				</div>
+
+				<div id="settings" class="popup">
+					<div class="popup__wrapper">
+						<div class="popup__frame">
+							<h3 class="popup__header" data-text="settings"></h3>
+							<div class="language-toggle">
+								<img data-lang="en" src="/icons/flag_en.svg" alt="English" style="display: none;">
+								<img data-lang="ua" src="/icons/flag_ua.svg" alt="Українська" style="display: none;">
+							</div>
+							<div class="popup__body">
+								<!-- <fieldset class="popup__field">
+											<legend class="legend popup__legend" data-text="moveHighlighting"></legend>
+											<input type="checkbox" name="moveHighlighting" id="moveHighlighting" checked>
+										</fieldset> -->
+								<fieldset class="popup__field">
+									<legend class="legend popup__legend" data-text="cameraAutoRotate"></legend>
+									<input type="checkbox" name="cameraAutoRotate" id="cameraAutoRotate" checked>
+								</fieldset>
+								<fieldset class="popup__field">
+									<legend class="legend popup__legend" data-text="cameraInertia"></legend>
+									<input type="checkbox" name="cameraInertia" id="cameraInertia" checked>
+								</fieldset>
+								<fieldset class="popup__field">
+									<legend class="legend popup__legend" data-text="musicOn"></legend>
+									<input type="checkbox" name="musicOn" id="musicOn" checked>
+								</fieldset>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div id="profile" class="popup" data-isInitialized="false">
+					<div class="popup__wrapper">
+						<div class="popup__frame">
+							<h3 class="popup__header" data-text="profile"></h3>
+							<div class="popup__body">
+								<div class="popup__field">
+									<p class="" data-text="username"></p>
+									<p id="username"></p>
+								</div>
+								<div class="popup__field">
+									<p class="" data-text="userMatchCount"></p>
+									<p id="userMatchCount"></p>
+								</div>
+								<div class="popup__field">
+									<p class="" data-text="userVictoryCount"></p>
+									<p id="userVictoryCount"></p>
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 
-			<div id="settings" class="popup">
-				<div class="popup__wrapper">
+			<div class="popups">
+				<div id="gameResult" class="popup popup-small">
 					<div class="popup__frame">
-						<h3 class="popup__header" data-text="settings"></h3>
-						<div class="language-toggle">
-							<img data-lang="en" src="/icons/flag_en.svg" alt="English" style="display: none;">
-							<img data-lang="ua" src="/icons/flag_ua.svg" alt="Українська" style="display: none;">
-						</div>
 						<div class="popup__body">
-							<!-- <fieldset class="popup__field">
-								<legend class="legend popup__legend" data-text="moveHighlighting"></legend>
-								<input type="checkbox" name="moveHighlighting" id="moveHighlighting" checked>
-							</fieldset> -->
-							<fieldset class="popup__field">
-								<legend class="legend popup__legend" data-text="cameraAutoRotate"></legend>
-								<input type="checkbox" name="cameraAutoRotate" id="cameraAutoRotate" checked>
-							</fieldset>
-							<fieldset class="popup__field">
-								<legend class="legend popup__legend" data-text="cameraInertia"></legend>
-								<input type="checkbox" name="cameraInertia" id="cameraInertia" checked>
-							</fieldset>
-							<fieldset class="popup__field">
-								<legend class="legend popup__legend" data-text="musicOn"></legend>
-								<input type="checkbox" name="musicOn" id="musicOn" checked>
-							</fieldset>
+							<p class="popup__prompt">
+								<span id="winner"></span>
+								<span data-text="playerWins"></span>
+							</p>
+							<div class="popup__row popup__row-centered">
+								<button id="rematch" class="btn btn-neon popup__btn" type="button" data-text="rematch"></button>
+								<button id="exit" class="btn btn-neon popup__btn" type="button" data-text="exit"></button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div id="confirmLeave" class="popup popup-small">
+					<div class="popup__frame">
+						<div class="popup__body">
+							<p class="popup__prompt">
+								<span data-text="leavePrompt"></span>
+							</p>
+							<div class="popup__row popup__row-centered">
+								<button id="leave" class="btn btn-neon popup__btn" type="button" data-text="leave"></button>
+								<button id="stay" class="btn btn-neon popup__btn" type="button" data-text="stay"></button>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 
-			<div id="profile" class="popup" data-isInitialized="false">
-				<div class="popup__wrapper">
-					<div class="popup__frame">
-						<h3 class="popup__header" data-text="profile"></h3>
-						<div class="popup__body">
-							<div class="popup__field">
-								<p class="" data-text="username"></p>
-								<p id="username"></p>
-							</div>
-							<div class="popup__field">
-								<p class="" data-text="userMatchCount"></p>
-								<p id="userMatchCount"></p>
-							</div>
-							<div class="popup__field">
-								<p class="" data-text="userWinCount"></p>
-								<p id="userWinCount"></p>
-							</div>
-						</div>
-					</div>
-				</div>
+			<div class="menubar">
+				<img id="wutIcon" src="./icons/Lock.svg" alt="placeholder" data-alt="placeholder" class="menubar-icon">
+				<img id="browseIcon" src="./icons/OpenEye.svg" alt="browse" data-alt="browse" class="menubar-icon">
+				<img id="playIcon" src="./icons/Play.svg" alt="play" data-alt="play" class="menubar-icon">
+				<img id="settingsIcon" src="./icons/Gear.svg" alt="settings" data-alt="settings" class="menubar-icon">
+				<img id="profileIcon" src="./icons/Person.svg" alt="profile" data-alt="profile" class="menubar-icon">
 			</div>
 		</div>
+	</main>
 
-		<div class="popups">
-			<div id="gameResult" class="popup popup-small">
-				<div class="popup__frame">
-					<div class="popup__body">
-						<p class="popup__prompt">
-							<span id="winner"></span>
-							<span data-text="playerWins"></span>
-						</p>
-						<div class="popup__row popup__row-centered">
-							<button id="rematch" class="btn btn-neon popup__btn" type="button" data-text="rematch"></button>
-							<button id="exit" class="btn btn-neon popup__btn" type="button" data-text="exit"></button>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+	<footer>
+
+	</footer>
 </body>
 
 </html>

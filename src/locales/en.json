@@ -8,7 +8,7 @@
 	"cameraAutoRotate": "Camera auto rotate",
 	"cameraInertia": "Camera inertia",
 	"userMatchCount": "Total matches: ",
-	"userWinCount": "Total wins: ",
+	"userVictoryCount": "Total victories: ",
 	"findGame": "Find game",
 	"playLocal": "Play local",
 	"joinGame": "Join game",
@@ -27,5 +27,8 @@
 	"minutes": "min",
 	"soundOn": "Sound",
 	"musicOn": "Music",
+	"leave": "Leave",
+	"stay": "Stay",
+	"leavePrompt": "Leave Game?",
 	"": ""
 }

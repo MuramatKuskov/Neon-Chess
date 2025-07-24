@@ -146,6 +146,17 @@ input[type="range"]::-webkit-slider-thumb {
 	filter: invert(50%) sepia(100%) saturate(1000%) hue-rotate(335deg);
 }
 
+.btn:disabled {
+	border-color: var(--low-contrast-color);
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.btn:disabled:hover {
+	border-color: var(--low-contrast-color);
+	transform: none;
+}
+
 /* #endregion */
 
 /* #region custom-range */
