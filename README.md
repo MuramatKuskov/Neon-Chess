@@ -1,6 +1,10 @@
 # Neon Chess
 
-# Storage Scheme
+**3D multiplayer chess in Telegram**
+
+Play at [Digital Duels](https://t.me/digital_duels_bot)
+
+# TG Cloud Storage Scheme
 - total matches
 - total wins
 	- blue win rate
@@ -13,7 +17,7 @@
 
 
 # TODO:
-- Visual aid for selected figure
-- Hide menu during session & show on hover/touch
-
-- Notifications (check)
+- UI/UX
+- Tg Bot API functionality
+- Chat
+- Animations

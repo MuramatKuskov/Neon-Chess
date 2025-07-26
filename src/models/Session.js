@@ -76,7 +76,7 @@ export class Session {
 			|| target.parent.userData.maintainingObject
 		);
 
-		// prevent moves if user is not current player
+		// prevent moves if online user is not current player
 		if (this.currentPlayer.user && window.user.id !== this.currentPlayer.user.id) return;
 
 		// prevent selecting defeated figures
@@ -172,7 +172,7 @@ export class Session {
 	}
 
 	switchPlayers() {
-		this.currentPlayer = this.currentPlayer.user.id === this.playerOne.user.id ? this.playerTwo : this.playerOne;
+		this.currentPlayer = this.currentPlayer.color === this.playerOne.color ? this.playerTwo : this.playerOne;
 
 		if (this.timer) {
 			this.timer.switchPlayers(this.currentPlayer);
@@ -202,13 +202,6 @@ export class Session {
 
 		const winnerOutput = winner.user?.username ||
 			(winner.color === board.redModelColor ? 'Red' : 'Blue');
-
-		if (
-			window.user.id !== this.playerOne.user.id
-			&& window.user.id !== this.playerTwo.user.id
-		) {
-			restartAllowed = false;
-		}
 
 		toggleGameResult(winnerOutput, restartAllowed);
 	}
@@ -377,7 +370,7 @@ export class OnlineSession extends Session {
 								? this.playerOne : this.playerTwo;
 
 						board.setState(message.data.figures);
-						this.timer.inverseCountdown = message.data.inverseCountdown;
+						if (this.timer) this.timer.inverseCountdown = message.data.inverseCountdown;
 						this.startGame();
 						this.handleCheckmate();
 						requestRenderIfNotRequested(scene, camera, controls);

@@ -5,7 +5,7 @@ const loader = new GLTFLoader();
 // move files to server
 export function loadModelFromFile(model, playerModelCache) {
 	return new Promise((resolve, reject) => {
-		const path = '/models/' + model + '.glb';
+		const path = './models/' + model + '.glb';
 
 		loader.load(path, function (gltf) {
 			gltf.scene.scale.set(0.6, 0.6, 0.6);

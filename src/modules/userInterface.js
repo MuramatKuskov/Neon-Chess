@@ -128,7 +128,9 @@ function playMusic() {
 export function nextTrack(event) {
 	const audio = event.target;
 	currentTrack = (currentTrack + 1) % songCount;
-	audio.src = `./sound/music/${currentTrack}.mp3`;
+	// audio.src = `./sound/music/${currentTrack}.mp3`;
+	audio.src = audio.src.replace(/\/sound\/music\/\d+\.mp3/, `./sound/music/${currentTrack}.mp3`);
+	audio.load();
 	audio.play();
 }
 
@@ -217,6 +219,7 @@ function toggleLangIcon() {
 
 async function applyLocaleText() {
 	try {
+		// fetch(document.URL.slice(0, document.URL.indexOf("#"))+`locales/${user.language}.json`)
 		fetch(`/src/locales/${user.language}.json`)
 			.then(response => response.json())
 			.then(dictionary => {
