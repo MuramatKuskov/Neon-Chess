@@ -125,11 +125,11 @@ function playMusic() {
 	document.removeEventListener('touch', playMusic);
 }
 
-export function nextTrack(event) {
-	const audio = event.target;
+export function nextTrack() {
+	const audio = document.querySelector("audio");
 	currentTrack = (currentTrack + 1) % songCount;
-	// audio.src = `./sound/music/${currentTrack}.mp3`;
-	audio.src = audio.src.replace(/\/sound\/music\/\d+\.mp3/, `./sound/music/${currentTrack}.mp3`);
+	audio.src = `./sound/music/${currentTrack}.mp3`;
+	// audio.src = audio.src.replace(/\/sound\/music\/\d+\.mp3/, `./sound/music/${currentTrack}.mp3`);
 	audio.load();
 	audio.play();
 }
@@ -252,7 +252,7 @@ function handlePopupWrapperPress(event, node) {
 function toggleMenus(key) {
 	if (key === "placeholder") {
 		if (!getSettings('musicOn')) return;
-		nextTrack({ target: document.querySelector("audio") });
+		nextTrack();
 		return;
 	}
 
